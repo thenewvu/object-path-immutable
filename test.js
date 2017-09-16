@@ -74,6 +74,77 @@ describe('set', function () {
   })
 })
 
+describe('apply', function () {
+  const toString = value => value + ''
+
+  it('should apply to a deep key without modifying the original object', function () {
+    var obj = {
+      a: {
+        b: 1
+      },
+      c: {
+        d: 2
+      }
+    }
+
+    var newObj = op.apply(obj, 'a.b', toString)
+
+    expect(newObj).not.to.be.equal(obj)
+    expect(newObj.a).not.to.be.equal(obj.a)
+    expect(obj.a).to.be.eql({b: 1})
+    // this should be the same
+    expect(newObj.c).to.be.equal(obj.c)
+
+    expect(newObj.a.b).to.be.equal('1')
+  })
+
+  it('should apply to a deep array', function () {
+    var obj = {
+      a: {
+        b: [1, 2, 3]
+      },
+      c: {
+        d: 2
+      }
+    }
+
+    var newObj = op.apply(obj, 'a.b.1', toString)
+
+    expect(newObj).not.to.be.equal(obj)
+    expect(newObj.a).not.to.be.equal(obj.a)
+    expect(newObj.a.b).not.to.be.equal(obj.a.b)
+    expect(newObj.c).to.be.equal(obj.c)
+
+    expect(newObj.a.b).to.be.eql([1, '2', 3])
+  })
+
+  it('should create intermediate objects and array', function () {
+    var obj = {
+      a: {},
+      c: {
+        d: 2
+      }
+    }
+
+    var newObj = op.apply(obj, 'a.b.1.f', toString)
+
+    expect(newObj).not.to.be.equal(obj)
+    expect(newObj.a).not.to.be.equal(obj.a)
+    expect(obj.a).to.be.eql({})
+    expect(newObj.a).to.be.eql({b: [, {f: 'undefined'}]}) // eslint-disable-line no-sparse-arrays
+  })
+
+  it('should return the original object if passed an empty path', function () {
+    var obj = {}
+
+    expect(op.apply(obj, '', toString)).to.be.equal(obj)
+  })
+
+  it('should apply to a numeric path', function () {
+    expect(op.apply([], 0, toString)).to.deep.equal(['undefined'])
+  })
+})
+
 describe('insert', function () {
   it('should insert value into existing array without modifying the object', function () {
     var obj = {

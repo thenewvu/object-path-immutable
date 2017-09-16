@@ -97,6 +97,27 @@ const newObj = immutable.set(obj, 'a.c.1', 'fooo')
 // }
 ```
 
+#### apply (initialObject, path, func)
+
+Replace the value at `path` with the return of calling `func`.
+
+The `func` will receive the only argument which is the value at `path`.
+
+Work mostly the same as `set()`.
+
+```javascript
+const newObj1 = immutable.apply(obj, 'a.b', b => b + 'f')
+const newObj2 = immutable.apply(obj, ['a', 'b'], b => b + 'f')
+
+// {
+//   a: {
+//     b: 'cf',
+//     c: ['d', 'f']
+//   }
+// }
+```
+
+
 #### push (initialObject, path, value)
 
 Push into a deep array (it will create intermediate objects/arrays if necessary).
